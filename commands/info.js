@@ -26,6 +26,8 @@ module.exports = {
 			const server = interaction.channel.guild;
 			await interaction.reply(`Server Name: ${server.name}\nMember Count: ${server.memberCount}`);
 		}
+		// const message = await interaction.fetchReply();
+		// console.log(message); // (Just a test to see what fetchReply() returns.)
 		await wait(10000).then(() => interaction.deleteReply());
 	},
 };
