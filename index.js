@@ -6,7 +6,7 @@ const { token } = require('./config.json');
 
 
 // Create a new client instance
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES] });
 
 
 client.commands = new Collection();
