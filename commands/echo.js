@@ -7,13 +7,9 @@ module.exports = {
 		.addStringOption(option =>
 			option.setName('input')
 				.setDescription('The message to echo back.')
-				.setRequired(true)
-				.addChoices(
-					{ name: 'Funny', value: 'gif_funny' },
-					{ name: 'Meme', value: 'gif_meme' },
-					{ name: 'Movie', value: 'gif_movie' },
-				)),
+				.setRequired(true)),
+
 	async execute(interaction) {
-		await interaction.reply('You chose ');
+		await interaction.reply(`${interaction.user.tag} chose ${interaction.name}`);
 	},
 };
