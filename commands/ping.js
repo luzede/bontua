@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const wait = require('node:timers/promises').setTimeout;
-const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-// const { MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js');
+// const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
+const { MessageActionRow, MessageSelectMenu } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -16,34 +16,34 @@ module.exports = {
 	// },
 
 
-	async execute(interaction) {
-		const row = new MessageActionRow()
-			.addComponents(
-				new MessageButton()
-					.setCustomId('primary')
-					.setLabel('Primary')
-					.setStyle('PRIMARY')
-					.setDisabled(false)
-					.setEmoji('🔥'),
-			);
-		const embed = new MessageEmbed()
-			.setColor('#0099ff')
-			.setTitle('Some title')
-			.setURL('https://discord.js.org')
-			.setDescription('Some description here');
-		await interaction.reply({ content: 'Pong!', components: [row], embeds: [embed] });
+	// async execute(interaction) {
+	// 	const row = new MessageActionRow()
+	// 		.addComponents(
+	// 			new MessageButton()
+	// 				.setCustomId('primary')
+	// 				.setLabel('Primary')
+	// 				.setStyle('PRIMARY')
+	// 				.setDisabled(false)
+	// 				.setEmoji('🔥'),
+	// 		);
+	// 	const embed = new MessageEmbed()
+	// 		.setColor('#0099ff')
+	// 		.setTitle('Some title')
+	// 		.setURL('https://discord.js.org')
+	// 		.setDescription('Some description here');
+	// 	await interaction.reply({ content: 'Pong!', components: [row], embeds: [embed] });
 
-		const filter = i => i.customId === 'primary' && i.user.id === interaction.user.id;
-		const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+	// 	const filter = i => i.customId === 'primary' && i.user.id === interaction.user.id;
+	// 	const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
-		collector.on('collect', async i => {
-			await i.deferUpdate();
-			await wait(3000);
-			await i.editReply({ content: 'A button was clicked', components: [], embeds: [] });
-		});
+	// 	collector.on('collect', async i => {
+	// 		await i.deferUpdate();
+	// 		await wait(10000);
+	// 		await i.editReply({ content: 'A button was clicked', components: [], embeds: [] });
+	// 	});
 
-		collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-	},
+	// 	collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+	// },
 
 	// async execute(interaction) {
 	// 	const row = new MessageActionRow()
@@ -72,4 +72,45 @@ module.exports = {
 	// 		.setDescription('Some description here');
 	// 	await interaction.reply({ content: 'Pong!', ephemeral: true, embeds: [embed], components: [row] });
 	// },
+
+
+	async execute(interaction) {
+		const row = new MessageActionRow()
+			.addComponents(
+				new MessageSelectMenu()
+					.setCustomId('select')
+					.setPlaceholder('Nothing selected')
+					.setMinValues(2)
+					.setMaxValues(3)
+					.setDisabled(false)
+					.addOptions([
+						{
+							label: 'Select me',
+							description: 'This is a description',
+							value: 'first_option',
+						},
+						{
+							label: 'You can select me too',
+							description: 'This is also a description',
+							value: 'second_option',
+						},
+						{
+							label: 'I am also an option',
+							description: 'This is a description as well',
+							value: 'third_option',
+						},
+					]),
+			);
+		await interaction.reply({ content: 'Pong!', components: [row] });
+
+		const filter = i => i.customId === 'select' && i.user.id === interaction.user.id;
+		const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
+
+		collector.on('collect', async i => {
+			await i.deferUpdate();
+			row.components[0].setDisabled(true);
+			await wait(10000);
+			await i.editReply({ content: 'Selections were picked', components: [], embeds: [] });
+		});
+	},
 };

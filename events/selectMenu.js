@@ -1,14 +1,14 @@
-const wait = require('node:timers/promises').setTimeout;
+// const wait = require('node:timers/promises').setTimeout;
 
 module.exports = {
 	name: 'interactionCreate',
-	execute(interaction) {
-        if (!interaction.isSelectMenu()) return;
+	async execute(interaction) {
+		if (!interaction.isSelectMenu()) return;
 
-	    if (interaction.customId === 'select') {
-            await interaction.deferUpdate();
-            await wait(4000);
-            await interaction.editReply({ content: 'Something was selected!', components: [] });
-	    }
+	// 	if (interaction.customId === 'select') {
+	// 		await interaction.deferUpdate();
+	// 		await wait(10000);
+	// 		await interaction.editReply({ content: 'Something was selected!', components: [] });
+	// 	}
 	},
-}
+};
