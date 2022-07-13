@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-// const wait = require('node:timers/promises').setTimeout;
+const wait = require('node:timers/promises').setTimeout;
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 // const { MessageActionRow, MessageSelectMenu, MessageEmbed } = require('discord.js');
 
@@ -37,7 +37,9 @@ module.exports = {
 		const collector = interaction.channel.createMessageComponentCollector({ filter, time: 15000 });
 
 		collector.on('collect', async i => {
-			await i.update({ content: 'A button was clicked', components: [], embeds: [] });
+			await i.deferUpdate();
+			await wait(3000);
+			await i.editReply({ content: 'A button was clicked', components: [], embeds: [] });
 		});
 
 		collector.on('end', collected => console.log(`Collected ${collected.size} items`));
