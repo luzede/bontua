@@ -45,6 +45,25 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
+	if (interaction.isAutocomplete()) {
+		if (interaction.commandName === 'autocomplete') {
+			const focusedOption = interaction.options.getFocused(true);
+			let choices;
+
+			if (focusedOption.name === 'name') {
+				choices = ['faq', 'install', 'collection', 'promise', 'debug'];
+			}
+
+			if (focusedOption.name === 'theme') {
+				choices = ['halloween', 'christmas', 'summer'];
+			}
+
+			const filtered = choices.filter(choice => choice.startsWith(focusedOption.value));
+			await interaction.respond(
+				filtered.map(choice => ({ name: choice, value: choice })),
+			);
+		}
+	}
 	if (!interaction.isCommand()) return;
 
 
