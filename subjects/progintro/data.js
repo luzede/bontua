@@ -6,5 +6,5 @@ module.exports = {
 	input: '9923',
 	output: '2',
 	url: 'http://grader.softlab.ntua.gr/?page=problem&id=27',
-	constraints: ':stopwatch:: 1s',
+	constraints: '⏱️: 1s',
 };
