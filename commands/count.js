@@ -5,7 +5,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('count')
 		.setDescription('Counts to a number!')
-		.setDMPermission(false)
+		.setDMPermission(true)
 		.addIntegerOption(option => option
 			.setName('number')
 			.setDescription('The number to count to')
@@ -25,15 +25,18 @@ module.exports = {
 		}
 		await wait(1000);
 		try {
-			await interaction.editReply(`Done! I counted to ${number}`)
+			await interaction.editReply({ content: `Done! I counted to ${number}`, fetchReply: true })
 				.then(message => setTimeout(() => message.delete(), 3000))
 				.catch(error => {
 					console.error(error);
 					interaction.reply('There was an error while deleting the message!');
 				});
+
+			// const message = await interaction.editReply({ content: `Done! I counted to ${number}`, fetchReply: true });
+			// message.delete();
 		}
 		catch (error) {
-			await interaction.editReply('Failed to delete the message');
+			await interaction.editReply({ content:'Failed to delete the message' });
 			console.error(error);
 		}
 		// await interaction.deleteReply();
