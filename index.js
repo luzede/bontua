@@ -4,7 +4,7 @@ const path = require('node:path');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
 
-global.rootDirectory = path.resolve(__dirname);
+// global.rootDirectory = path.resolve(__dirname);
 
 
 // Create a new client instance

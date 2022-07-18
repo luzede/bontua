@@ -2,8 +2,10 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const subjectsPath = path.join(global.rootDirectory, 'subjects');
+
+const subjectsPath = path.join(process.cwd(), 'subjects');
 const subjects = fs.readdirSync(subjectsPath).map(fileName => { return { name: fileName, value: fileName }; });
+
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -23,15 +25,15 @@ module.exports = {
 	async execute(interaction) {
 		await interaction.deferReply();
 		const subject = interaction.options.getString('subject');
-		const exercisePath = path.join(global.rootDirectory, 'subjects', subject);
+		const exercisePath = path.join(subjectsPath, subject);
 		const dataPath = path.join(exercisePath, 'data.js');
-		console.log(dataPath);
+		// console.log(dataPath);
 		const objectData = require(dataPath);
-		console.log(objectData);
+		// console.log(objectData);
 		const exerciseFunctionPath = path.join(exercisePath, 'exercise.js');
-		console.log(exerciseFunctionPath);
+		// console.log(exerciseFunctionPath);
 		const exerciseFunction = require(exerciseFunctionPath);
-		console.log(exerciseFunction);
+		// console.log(exerciseFunction);
 		await interaction.editReply({ embeds: [exerciseFunction(objectData)] });
 	},
 };
