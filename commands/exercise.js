@@ -24,16 +24,22 @@ module.exports = {
 				.setAutocomplete(true)),
 	async execute(interaction) {
 		await interaction.deferReply();
-		const subject = interaction.options.getString('subject');
-		const exercisePath = path.join(subjectsPath, subject);
+		const subjectName = interaction.options.getString('subject');
+		const problemName = interaction.options.getString('problem');
+
+		const exercisePath = path.join(subjectsPath, subjectName);
+
 		const dataPath = path.join(exercisePath, 'data.js');
-		// console.log(dataPath);
-		const objectData = require(dataPath);
-		// console.log(objectData);
+		const dataMap = require(dataPath);
+
 		const exerciseFunctionPath = path.join(exercisePath, 'exercise.js');
-		// console.log(exerciseFunctionPath);
 		const exerciseFunction = require(exerciseFunctionPath);
-		// console.log(exerciseFunction);
-		await interaction.editReply({ embeds: [exerciseFunction(objectData)] });
+
+		if (dataMap.has(problemName) && problemName) {
+			await interaction.editReply({ embeds: [exerciseFunction(dataMap.get(problemName))] });
+		}
+		else {
+			await interaction.editReply({ content: 'You need to choose an exercise' });
+		}
 	},
 };

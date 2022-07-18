@@ -17,10 +17,19 @@ module.exports = function buildExerciseEmbed(object) {
 		embed.addField('Περιορισμοί', `\`\`\`\n${object.constraints}\n\`\`\``);
 	}
 	if (object.input) {
-		embed.addField('Εισόδος', `\`\`\`\n${object.input}\n\`\`\``, true);
-	}
-	if (object.output) {
-		embed.addField('Έξοδος', `\`\`\`\n${object.output}\n\`\`\``, true);
+		if (Array.isArray(object.input)) {
+			for (let i = 0; i < object.input.length; i++) {
+				embed.addField(`Είσοδος ${i + 1}`, `\`\`\`\n${object.input[i]}\n\`\`\``, true);
+				embed.addField(`Εξόδος ${i + 1}`, `\`\`\`\n${object.output[i]}\n\`\`\``, true);
+				if (!(i == object.input.length - 1)) {
+					embed.addField('\u200B', '\u200B');
+				}
+			}
+		}
+		else {
+			embed.addField('Είσοδος', `\`\`\`\n${object.input}\n\`\`\``, true);
+			embed.addField('Εξόδος', `\`\`\`\n${object.output}\n\`\`\``, true);
+		}
 	}
 	if (object.url) {
 		embed.setURL(object.url);
