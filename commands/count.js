@@ -29,7 +29,7 @@ module.exports = {
 				.then(message => setTimeout(() => message.delete(), 3000))
 				.catch(error => {
 					console.error(error);
-					interaction.reply('There was an error while deleting the message!');
+					interaction.editReply('There was an error while deleting the message!');
 				});
 
 			// const message = await interaction.editReply({ content: `Done! I counted to ${number}`, fetchReply: true });
