@@ -50,7 +50,6 @@ module.exports = {
 			// Get the list of objects from the Map (values are objects)
 			const dataList = Array.from(dataMap.values());
 			const embedList = menuFunction(dataList);
-			console.log(embedList);
 
 			const message = await interaction.editReply({ embeds: [embedList[0]], fetchReply: true });
 
