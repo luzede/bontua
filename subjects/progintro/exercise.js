@@ -2,7 +2,7 @@ const { MessageEmbed } = require('discord.js');
 
 // This exports a function that takes an object from the data.js file and returns an embed object for the exercise
 
-module.exports = function buildExerciseEmbed(object) {
+module.exports = async function buildExerciseEmbed(object, interaction) {
 	const thumbnailLink = 'https://e7.pngegg.com/pngimages/46/626/png-clipart-c-logo-the-c-programming-language-computer-icons-computer-programming-source-code-programming-miscellaneous-template.png';
 	const embed = new MessageEmbed()
 		.setTitle(object.title)
@@ -36,5 +36,13 @@ module.exports = function buildExerciseEmbed(object) {
 	if (object.url) {
 		embed.setURL(object.url);
 	}
-	return embed;
+
+	if (object.difficulty && object.difficultyGrade) {
+		embed.setAuthor({ name: `${object.difficulty} ${object.difficultyGrade}` });
+	}
+	else if (object.difficulty) {
+		embed.setAuthor({ name: object.difficulty });
+	}
+
+	await interaction.editReply({ embeds: [embed] });
 };

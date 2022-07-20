@@ -36,11 +36,11 @@ module.exports = {
 
 
 		if (dataMap.has(problemName) && problemName) {
-			// Export the function that returns an embed for the given object from dataMap
+			// Export the function that builds the embed and replies with it
 			const exerciseFunctionPath = path.join(subjectPath, 'exercise.js');
 			const exerciseFunction = require(exerciseFunctionPath);
 			// Get the object from the Map with the given name and pass it to the function, which returns an embed
-			await interaction.editReply({ embeds: [exerciseFunction(dataMap.get(problemName))] });
+			await exerciseFunction(dataMap.get(problemName), interaction);
 		}
 		else {
 			// Export the function that returns a menu embed when passed with list of objects from dataMap
@@ -49,48 +49,8 @@ module.exports = {
 
 			// Get the list of objects from the Map (values are objects)
 			const dataList = Array.from(dataMap.values());
-			const embedList = menuFunction(dataList);
-
-			const message = await interaction.editReply({ embeds: [embedList[0]], fetchReply: true });
-
-			if (embedList.length == 1) {
-				message
-					.then(msg => setTimeout(() => msg.delete(), 90000))
-					.catch(error => console.error(error));
-				return;
-			}
-
-			await message.react('⬅️');
-			await message.react('➡️');
-
-			const filter = (reaction, user) => {
-				return !(user.bot);
-			};
-
-			const collector = message.createReactionCollector({ filter, time: 90000 });
-
-
-			let embedIndex = 0;
-			collector.on('collect', async (reaction, user) => {
-				const userReactions = message.reactions.cache.filter(r => r.users.cache.has(user.id));
-				for (const r of userReactions.values()) {
-					await r.users.remove(user.id);
-				}
-
-				if (reaction.emoji.name === '⬅️' && embedIndex > 0) {
-					embedIndex--;
-					await interaction.editReply({ embeds: [embedList[embedIndex]], fetchReply: true });
-
-				}
-				else if (reaction.emoji.name === '➡️' && embedIndex < embedList.length - 1) {
-					embedIndex++;
-					await interaction.editReply({ embeds: [embedList[embedIndex]], fetchReply: true });
-				}
-			});
-
-			collector.on('end', async () => {
-				message.delete();
-			});
+			// Call the menuFunction which replies with the menu embed and adds collectors to the message for reactivity
+			await menuFunction(dataList, interaction);
 		}
 	},
 };
