@@ -44,7 +44,7 @@ module.exports = {
 		}
 		else {
 			// Export the function that returns a menu embed when passed with list of objects from dataMap
-			const menuFunctionPath = path.join(subjectPath, 'menu.js');
+			const menuFunctionPath = path.join(subjectPath, 'exerciseMenu.js');
 			const menuFunction = require(menuFunctionPath);
 
 			// Get the list of objects from the Map (values are objects)

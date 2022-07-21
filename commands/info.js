@@ -1,33 +1,27 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const wait = require('node:timers/promises').setTimeout;
+const fs = require('node:fs');
+const path = require('node:path');
+
+// Get the list of subjects to add to the choices for the string option
+const subjectsPath = path.join(process.cwd(), 'subjects');
+// Transform the list of subjects into a list of Choices object
+const subjects = fs.readdirSync(subjectsPath).map(fileName => { return { name: fileName, value: fileName }; });
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('info')
-		.setDescription('Sends info about the bot.')
-		.addSubcommand(subcommand =>
-			subcommand
-				.setName('user')
-				.setDescription('Info about a user')
-				.addUserOption(option => option.setName('target').setDescription('The user')))
-		.addSubcommand(subcommand =>
-			subcommand
-				.setName('server')
-				.setDescription('Info about a server')),
+		.setDescription('Get information about a subject')
+		.addStringOption(option =>
+			option
+				.setName('subject')
+				.setDescription('The subject to get the information for')
+				.setRequired(true)
+				.addChoices(...subjects)),
 	async execute(interaction) {
-		const subcommand = interaction.options.getSubcommand();
-
-		if (subcommand === 'user') {
-			const user = interaction.options.getUser('target');
-			await interaction.reply(`Username: ${user.username}\nID: ${user.id}`);
-
-		}
-		else if (subcommand === 'server') {
-			const server = interaction.channel.guild;
-			await interaction.reply(`Server Name: ${server.name}\nMember Count: ${server.memberCount}`);
-		}
-		// const message = await interaction.fetchReply();
-		// console.log(message); // (Just a test to see what fetchReply() returns.)
-		await wait(10000).then(() => interaction.deleteReply());
+		const subject = interaction.options.getString('subject');
+		const subjectPath = path.join(subjectsPath, subject);
+		const infoPath = path.join(subjectPath, 'info.js');
+		const infoFunction = require(infoPath);
+		await infoFunction(interaction);
 	},
 };
