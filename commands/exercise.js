@@ -31,7 +31,7 @@ module.exports = {
 		const subjectPath = path.join(subjectsPath, subjectName);
 
 		// Export the Map object from the data.js file that has all the objects in it
-		const dataPath = path.join(subjectPath, 'data.js');
+		const dataPath = path.join(subjectPath, 'exerciseData.js');
 		const dataMap = require(dataPath);
 
 

@@ -12,7 +12,7 @@ module.exports = {
 			// Might have to add logic here if I add more options to the exercise command
 			if (focusedOption.name == 'problem') {
 				const exercisePath = path.join(process.cwd(), 'subjects', subject);
-				const dataPath = path.join(exercisePath, 'data.js');
+				const dataPath = path.join(exercisePath, 'exerciseData.js');
 				const dataMap = require(dataPath);
 				const dataInArray = Array.from(dataMap.keys(), key => ({ name: key, value: key }));
 				let filtered = dataInArray.filter(choice => choice.name.startsWith(focusedOption.value));
