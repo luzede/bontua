@@ -6,7 +6,7 @@ map.set('1', {
 	answers: ['απαιτεί χρόνο **O(1)** στη χειρότερη περίπτωση.',
 		'απαιτεί χρόνο **Ω(n)** στη χειρότερη περίπτωση.',
 		'απαιτεί χρόνο **Ο(1)** στην καλύτερη περίπτωση.',
-		'απαιτεί χρόνο **Ω(n logn) στη χειρότερη περίπτωση.'],
+		'απαιτεί χρόνο **Ω(n logn)** στη χειρότερη περίπτωση.'],
 	correctAnswerIndex: 2,
 	code: undefined,
 	// This has to be array with codes included that go alongside the question
@@ -67,3 +67,5 @@ map.set('6', {
 	code: ['```js\nint n = 999, p = 1;\ndo { n /= 2; p *= 2; } while (n > 4);\nn += p;\n```'],
 	year: '2018',
 });
+
+module.exports = map;
