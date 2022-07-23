@@ -9,17 +9,23 @@ numberToWord.set(4, '🇩');
 numberToWord.set(5, '🇪');
 
 module.exports = async function quizFunction(dataList, interaction) {
+
+
+	// The part below is when there is no ID given in the quiz commands option
 	const quizLength = dataList.length;
+
+	// The lists that will hold the embeds and components
 	const embedList = [];
 	const componentList = [];
-
+	// Build the list of embeds and components for interaction
 	for (let i = 0; i < dataList.length; i++) {
 		const data = dataList[i];
 
 		// embed part
 		const embed = new MessageEmbed()
 			.setTitle(`Ερώτηση από ${data.year}`)
-			.setDescription(data.question);
+			.setDescription(data.question)
+			.setAuthor({ name: `ID: ${data.questionId}` });
 		if (data.code) {
 			if (data.code.length == 1) {
 				embed.addField('Κώδικας', data.code[0]);
@@ -54,36 +60,40 @@ module.exports = async function quizFunction(dataList, interaction) {
 
 	// It does not need filter because I will make it ephemeral
 	const endingTime = Date.now() + quizLength * 120000;
-	embedList[0].setFooter({ text: `Ερώτηση ${1} από ${quizLength} Χρόνος: ${Math.floor((endingTime - Date.now()) / 60000)}:${Math.floor((endingTime - Date.now()) / 1000 % 60)}` });
-	const message = await interaction.editReply({ embeds: [embedList[0]], components: [componentList[0]], fetchReply: true, ephemeral: true });
+	const startTime = Date.now();
+	embedList[0].setFooter({ text: `Ερώτηση ${1} από ${quizLength} Χρόνος: ${Math.floor((endingTime - Date.now()) / 60000)} λεπτά` });
+	const message = await interaction.editReply({ embeds: [embedList[0]], components: [componentList[0]], ephemeral: true, fetchReply: true });
 
-	const collector = message.createMessageComponentCollector([{ componentType: 'BUTTON', time: quizLength * 120000, errors: ['time'] }]);
+	const collector = message.createMessageComponentCollector({ componentType: 'BUTTON', time: quizLength * 120000, errors: ['time'] });
 
 	let quizIndex = 0;
 	let rightAnswerCount = 0;
 	collector.on('collect', async i => {
+		// You defer the update because it might take more than 3 seconds to update and Discord will not allow it
 		await i.deferUpdate();
+		// customId has the format of `ij` where i is the index of the question and j is the index of the answer
 		if (i.customId[1] == dataList[quizIndex].correctAnswerIndex.toString()) {
 			rightAnswerCount++;
 		}
+		// If it is the last question's interaction(i), stop the collector
 		if (quizIndex == dataList.length - 1) {
-			const embed = new MessageEmbed()
-				.setTitle('Αποτελέσματα')
-				.setDescription(`Απάντησες σωστά σε ${rightAnswerCount} από ${quizLength} ερωτήσεις\nΣυνολικό χρόνο: ${Math.floor((endingTime - Date.now()) / 60000)}:${Math.floor((endingTime - Date.now()) / 1000 % 60)}\nΣυνολικό ποσοστό: ${Math.floor(rightAnswerCount / quizLength * 100)}%`);
-			await i.editReply({ embeds: [embed], components: [], ephemeral: true });
 			collector.stop();
 			return;
 		}
 		quizIndex++;
-		embedList[quizIndex].setFooter({ text: `Ερώτηση ${quizIndex + 1} από ${quizLength} | Χρόνος: ${Math.floor((endingTime - Date.now()) / 60000)}:${Math.floor((endingTime - Date.now()) / 1000 % 60)}` });
+		embedList[quizIndex].setFooter({ text: `Ερώτηση ${quizIndex + 1} από ${quizLength} | Χρόνος: ${Math.floor((endingTime - Date.now()) / 60000)} λεπτά` });
+		// Replies with the next question
 		await i.editReply({ embeds: [embedList[quizIndex]], components: [componentList[quizIndex]], ephemeral: true });
 	});
 
-	// collector.on('end', async () => {
-	// 	const embed = new MessageEmbed()
-	// 		.setTitle('Αποτελέσματα')
-	// 		.setDescription(`Απάντησες σωστά σε ${rightAnswerCount} από ${quizLength} ερωτήσεις\nΣυνολικό χρόνο: ${Math.floor((endingTime - Date.now()) / 60000)}:${Math.floor((endingTime - Date.now()) / 1000 % 60)}\nΣυνολικό ποσοστό: ${Math.floor(rightAnswerCount / quizLength * 100)}%`);
-	// 	await message.editReply({ embeds: [embed], components: [], ephemeral: true });
-	// });
+	// The reason is user with collecter.stop() used, otherwise it is time
+	collector.on('end', async (_, reason) => {
+		if (reason == 'user') {
+			const embed = new MessageEmbed()
+				.setTitle('Αποτελέσματα')
+				.setDescription(`Απάντησες σωστά σε **${rightAnswerCount}** από ${quizLength} ερωτήσεις\nΜέσα σε χρόνο: ${Math.ceil((Date.now() - startTime) / 60000)} λεπτά\nΣυνολικό ποσοστό: ${Math.floor(rightAnswerCount / quizLength * 100)}%`);
+			await interaction.editReply({ embeds: [embed], components: [], ephemeral: true });
+		}
+	});
 };
 

@@ -19,7 +19,7 @@ module.exports = {
 				.addChoices(...subjects))
 		.addIntegerOption(option =>
 			option
-				.setName('question')
+				.setName('id')
 				.setDescription('The ID of the multiple choice question you want')),
 	async execute(interaction) {
 		await interaction.deferReply({ ephemeral: true });
