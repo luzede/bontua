@@ -22,19 +22,26 @@ module.exports = {
 				.setName('id')
 				.setDescription('The ID of the multiple choice question you want')),
 	async execute(interaction) {
-		await interaction.deferReply({ ephemeral: true });
+		const id = interaction.options.getInteger('id');
+		if (id) {
+			await interaction.deferReply();
+		}
+		else {
+			await interaction.deferReply({ ephemeral: true });
+		}
 
+		// Get the subject path
 		const subject = interaction.options.getString('subject');
 		const subjectPath = path.join(subjectsPath, subject);
 
+		// Get the path where the data is located and require it (import essentially)
 		const dataPath = path.join(subjectPath, 'quizData.js');
 		const dataMap = require(dataPath);
 
+		// Get the quiz function path and require it (import essentially)
 		const quizPath = path.join(subjectPath, 'quiz.js');
 		const quizFunction = require(quizPath);
 
-		const dataList = Array.from(dataMap.values());
-
-		await quizFunction(dataList, interaction);
+		await quizFunction(dataMap, interaction);
 	},
 };
