@@ -20,6 +20,8 @@ module.exports = async function quizFunction(dataMap, interaction) {
 			await interaction.editReply('Question not found');
 			return;
 		}
+
+		// embed part
 		const embed = new MessageEmbed()
 			.setTitle(`Ερώτηση από ${questionData.year}`)
 			.setDescription(questionData.question)
@@ -45,7 +47,7 @@ module.exports = async function quizFunction(dataMap, interaction) {
 		const buttonList = [];
 		for (let j = 0; j < questionData.answers.length; j++) {
 			const button = new MessageButton()
-			// j is the index of the answer, and i is the index of the question
+				// j is the index of the answer, and i is the index of the question
 				.setCustomId(`${j}`)
 				.setEmoji(numberToWord.get(j + 1))
 				.setStyle('SECONDARY');
@@ -53,6 +55,7 @@ module.exports = async function quizFunction(dataMap, interaction) {
 		}
 		row.addComponents(...buttonList);
 
+		// Send the embed and the component
 		const message = await interaction.editReply({ embeds: [embed], components: [row], fetchReply: true });
 		const filter = i => {
 			// This part makes sure the button in Discord does not give error message "This interaction failed"
@@ -66,6 +69,19 @@ module.exports = async function quizFunction(dataMap, interaction) {
 		message.awaitMessageComponent({ filter, componentType: 'BUTTON', time: 60000 }).then(i => {
 			const answer = i.customId;
 			const correct = questionData.correctAnswerIndex;
+
+			answerString = '';
+			for (let j = 0; j < questionData.answers.length; j++) {
+				answerString += `${numberToWord.get(j + 1)} ${questionData.answers[j]}`;
+				if (j == correct) {
+					answerString += '✅';
+				}
+				else if (j == answer) {
+					answerString += '❌';
+				}
+				answerString += '\n';
+			}
+			embed.setFields({ name: 'Επιλογές', value: answerString });
 
 			for (const button of row.components) {
 				// This works because of Javascript's type coercion "1" == 1 is true, but if you don't like that, use === instead
@@ -133,7 +149,7 @@ module.exports = async function quizFunction(dataMap, interaction) {
 		const buttonList = [];
 		for (let j = 0; j < data.answers.length; j++) {
 			const button = new MessageButton()
-			// j is the index of the answer, and i is the index of the question
+				// j is the index of the answer, and i is the index of the question
 				.setCustomId(`${i}${j}`)
 				.setEmoji(numberToWord.get(j + 1))
 				.setStyle('SECONDARY');

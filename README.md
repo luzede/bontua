@@ -1,2 +1,3 @@
 # bontua
-A simple Discord bot in work for education
+An educational bot made for National Technical University of Athens(NTUA)
+Currently supports first year programming subjects
